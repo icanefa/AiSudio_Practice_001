@@ -1,0 +1,5 @@
+{
+  "name": "HR Toolkit",
+  "description": "A tool for HR to manage name lists, perform prize draws, and automatically group participants.",
+  "requestFramePermissions": []
+}
