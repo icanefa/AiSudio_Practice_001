@@ -27,6 +27,9 @@ export default function NameList({ names, setNames }: { names: string[], setName
         .map(n => n.trim().replace(/^["']|["']$/g, ''))
         .filter(n => n.length > 0);
       
+      if (parsedNames.length > 0) {
+        setTimeout(() => alert(`成功匯入 ${parsedNames.length} 筆資料！`), 100);
+      }
       setNames([...names, ...parsedNames]);
     };
     reader.readAsText(file);
@@ -38,7 +41,7 @@ export default function NameList({ names, setNames }: { names: string[], setName
   };
 
   const clearAll = () => {
-    if (confirm('Are you sure you want to clear all names?')) {
+    if (window.confirm('確定要清空所有名單嗎？')) {
       setNames([]);
     }
   };

@@ -39,7 +39,7 @@ export default function Grouping({ names }: { names: string[] }) {
     setGroups(result);
   };
 
-  const downloadCSV = () => {
+  const downloadCSV = async () => {
     let csvContent = "Group,Name\n";
     groups.forEach((group, index) => {
       group.forEach(member => {
@@ -50,15 +50,36 @@ export default function Grouping({ names }: { names: string[] }) {
       });
     });
     
-    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", "groups.csv");
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      if ('showSaveFilePicker' in window) {
+        // 使用 File System Access API 讓使用者選擇儲存位置
+        const handle = await (window as any).showSaveFilePicker({
+          suggestedName: 'groups.csv',
+          types: [{
+            description: 'CSV 檔案',
+            accept: { 'text/csv': ['.csv'] },
+          }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }));
+        await writable.close();
+      } else {
+        // Fallback 機制
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "groups.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        alert('儲存檔案時發生錯誤');
+      }
+    }
   };
 
   return (
