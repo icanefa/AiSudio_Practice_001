@@ -5,6 +5,9 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
   pages: write
@@ -35,8 +38,8 @@ jobs:
 
       - name: Build
         run: |
-          # 若部署在 repository 子路徑這裏可以考慮環境變數
-          npm run build
+          # 加上 --base 參數以正確處理 GitHub Pages 的子路徑 (Repository name)
+          npm run build -- --base=/${{ github.event.repository.name }}/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
